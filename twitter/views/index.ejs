@@ -1,0 +1,14 @@
+<form action="/send" method="POST">
+    <!-- 
+        提供了一个短的表单来输入新的tweet 信息 
+    -->
+    <input type="text" length="140" name="tweet">
+    <input type="submit" value="Tweet">
+</form>
+<!-- 
+    通过使用partial模版，
+    不用在index模板里使用丑陋的循环把标记嵌入进去    
+    我们把呈现tweet的简短模版抽象出来，
+    在需要的地方重复利用，
+-->
+<%- partial('partials/chirp', tweets) %>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- 
+    采用EJS模版引擎
+    在<%和%>标签之间的JavaScript会被执行
+-->
+<head>
+    <meta charset="utf-8">
+    <!-- Partial是一些迷你模版 -->
+    <!-- 可以通过指定不同的数据重复使用 -->
+    <!-- 
+        传入的参数是一个数组，
+        模版渲染时会自动遍历数组中的每一个元素，
+    -->
+    <%- partial('partials/stylesheet', stylesheets) %>
+    <title>
+        <%= title %>
+    </title>
+</head>
+
+<body>
+    <h1>
+        <%= header %>
+    </h1>
+    <!-- body变量 -->
+    <!-- 指定不同页面所需要渲染的内容 -->
+    <%- body %>
+</body>
+
+</html>

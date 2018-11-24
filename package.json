@@ -1,0 +1,27 @@
+{
+  "name": "nodeupandrunning",
+  "version": "1.0.0",
+  "description": "《Node即学即用》代码笔记",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/feihu1996x/nodeUpAndRunning.git"
+  },
+  "keywords": [
+    "node.js"
+  ],
+  "author": "angus",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/feihu1996x/nodeUpAndRunning/issues"
+  },
+  "homepage": "https://github.com/feihu1996x/nodeUpAndRunning#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "ejs": "^2.6.1",
+    "express": "^4.16.4"
+  }
+}
