@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>使用命名空间的socket.io客户端</title>
+</head>
+<body>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        /**
+        * 创建了两个Socket.IO连接
+        * 每个Socket.IO连接都有自己独立的变量和.on()事件监听器
+        */ 
+
+        var upandrunning = io('http://127.0.0.1:3000/upandrunning')
+        var weather = io('http://127.0.0.1:3000/weather')
+
+        upandrunning.on('message', function(data){
+            document.write('<br /><br />Node: Up and Running Update<br />')
+            document.write(data)
+        })
+
+        weather.on('message', function(data){
+            document.write('<br /><br />Weather Update<br />')
+            document.write(data)
+        })        
+    </script>
+</body>
+</html>

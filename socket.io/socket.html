@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>socket.html</title>
+</head>
+<body>
+    <!-- 
+        从Node服务器直接加载
+        需要的Socket.IO客户端库
+    -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+         let socket = io()
+         socket.on('message', function(data){
+             alert(data)
+         })
+    </script>    
+</body>
+</html>

@@ -1,0 +1,15 @@
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io('http://127.0.0.1:3000')
+    socket.on('news', function(data){
+        //  当Socket.IO服务器发送news事件时
+        //  客户端会把新项目的标题和内容写到浏览器页面上
+        document.write('<h1>' + data.title + '</h1>')
+        document.write('<p>' + data.contents + '</p>')
+        if(data.allowResponse){
+            //  如果该news项目允许有反馈
+            //  客户端socket还会发起scoop事件
+            socket.emit('scoop', {contents: 'News data received by client'})
+        }
+    })
+</script>

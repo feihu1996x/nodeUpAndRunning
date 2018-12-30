@@ -23,8 +23,11 @@
     "amqp": "^0.2.7",
     "body-parser": "^1.18.3",
     "cheerio": "^1.0.0-rc.2",
+    "connect": "^3.6.6",
+    "cookie-parser": "^1.4.3",
     "ejs": "^2.6.1",
     "express": "^4.16.4",
+    "express-session": "^1.15.6",
     "felix-couchdb": "^1.0.8",
     "generic-pool": "^3.4.2",
     "mongo": "^0.1.0",
@@ -33,7 +36,9 @@
     "mysql": "^2.16.0",
     "mysql2": "^1.6.4",
     "pg": "^7.7.1",
+    "pug": "^2.0.3",
     "redis": "^2.8.0",
-    "sequelize": "^4.41.2"
+    "sequelize": "^4.41.2",
+    "socket.io": "^2.2.0"
   }
 }
