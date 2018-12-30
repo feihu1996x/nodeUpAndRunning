@@ -1,0 +1,19 @@
+!!! 5
+//- 客户端代码: views/socket.pug
+html(lang='en')
+    head
+        script(type='text/javascript', src='/socket.io/socket.io.js')
+        script(type='text/javascript')
+            var socket = io.connect()
+            socket.on('emailchanged', function(data) {
+                document.getElementById('email').value = data.email
+            })
+            var submitEmail = function(form) {
+                socket.emit('emailupdate', {email: form.email.value})
+                return false
+            }
+    body
+        h1 Welcome
+        form(onsubmit='return submitEmail(this);')
+            input(id='email', name='email', type='text', value=locals.email)
+            input(type='submit', value='Change Email')

@@ -235,3 +235,82 @@ socketIo.on('connection', (socket)=>{
     })
 &lt;/script&gt;
 </pre>
+<h2>
+五、在Express和Socket.IO间共享session数据
+</h2>
+<pre class="prettyprint lang-pug">
+!!! 5
+//- 客户端代码: views/socket.pug
+html(lang='en')
+    head
+        script(type='text/javascript', src='/socket.io/socket.io.js')
+        script(type='text/javascript')
+            var socket = io.connect()
+            socket.on('emailchanged', function(data) {
+                document.getElementById('email').value = data.email
+            })
+            var submitEmail = function(form) {
+                socket.emit('emailupdate', {email: form.email.value})
+                return false
+            }
+    body
+        h1 Welcome
+        form(onsubmit='return submitEmail(this);')
+            input(id='email', name='email', type='text', value=locals.email)
+            input(type='submit', value='Change Email')
+</pre>
+<pre class="prettyprint lang-js">
+// app.js
+
+const io = require('socket.io')
+const express = require('express')
+const app = express.createServer()
+const store = new express.session.MemoryStore
+const utils = require('connect').utils
+const Session = require('connect').middleware.session.Session
+
+app.configure(function () {
+    app.use(express.cookieParser())
+    app.use(express.session({
+        secret: 'secretKey', 
+        key: 'express.sid',
+        store: store
+    }))
+    app.use(function (req, res) {
+        var sess = req.session
+        res.render('socket.jade', {
+            email: sess.email || ''
+        })
+    })
+})
+
+app.listen(8080)
+
+const sio = io.listen(app)
+
+sio.configure(function () {
+    sio.set('authorization', function (data, accept) {
+        var cookies = utils.parseCookie(data.headers.cookie)
+        data.sessionID = cookies['express.sid']
+        data.sessionStore = store
+        store.get(data.sessionID, function (err, session) {
+            if (err || !session) {
+                return accept("Invalid session", false)
+            }
+            data.session = new Session(data, session)
+            accept(null, true)
+        })
+    })
+    sio.sockets.on('connection', function (socket) {
+        var session = socket.handshake.session
+        socket.join(socket.handshake.sessionId)
+        socket.on('emailupdate', function (data) {
+            session.email = data.email
+            session.save()
+            sio.sockets.in(socket.handshake.sessionId).emit('emailchanged', {
+                email: data.email
+            })
+        })
+    })
+})
+</pre>
