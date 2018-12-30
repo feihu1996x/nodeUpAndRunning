@@ -1,316 +1,64 @@
 <h1>
-Node与Socket.IO
+Node中的包管理
 </h1>
 <h2>
-一、通过Socket.IO扩展库，浏览器客户端与Node服务器之间可以采用高效的底层socket机制来回发送消息，同时浏览器与服务器间也可以共享代码
+一、Node的包管理系统(npm)提供了发布代码的方法，或者将代码发布到本地，或者通过全局的Node模块资源库。 npm帮助你管理代码依
+赖包的安装，以及其他与发布代码相关的工作。而且, npm是完全用JavaScript和Node编写的
 </h2>
 <h2>
-二、Socket.IO扩展库使用了浏览器支持并采用的HTML5 WebSocket标准，此外，该库还支持一系列降级功能
+二、搜索包
 </h2>
-<ul>
-    <li>WebSocket</li>
-    <li>WebSocket over Flash</li>
-    <li>XHR Polling</li>
-    <li>XHR Multipart Streaming</li>
-    <li>Forever Iframe</li>
-    <li>JSONP Polling</li>
-</ul>
 <pre class="prettyprint lang-bsh">
-npm install --save socket.io
+# 在全局npm注册库中搜索指定的包
+npm search packagename
 </pre>
-<pre class="prettyprint lang-js">
-/**
- *  创建Socket.IO服务器 
- * */
-
-const http = require('http')
-const io = require('socket.io')
-
-const server = http.createServer()
-
-server.on('request', (req, res)=>{
-    res.writeHead(200, {'Content-Type': 'text/plain'})
-    res.end('Hello, World!')
-})
-
-server.listen(3000, ()=>{
-    console.log('Server running at http://127.0.0.1:3000')
-})
-
-//  调用工厂方法io.listen()创建一个socket.io服务器
-//  将自带的事件监听器包装在发送到http服务器的所有请求上
-//  监听器会查找从Socket.IO客户端发送来的请求，并对应处理
-//  对于其他的请求，它会以原本的工作方式传递给HTTP服务器
-const socket = io.listen(server)
-
-socket.on('connection', (client)=>{
-    // socket 是持久性连接
-    // 使用传入的 client 对象来与每个浏览器进行通信
-    console.log('Client connected')
-})
-</pre>
-<pre class="prettyprint lang-js">
-/**
- * 一个简单的 Socket.IO 服务器
- */
-
-const http = require('http')
-const io = require('socket.io')
-const fs = require('fs')
-
-const socketFile = fs.readFileSync('socket.html')
-
-const server = http.createServer()
-
-server.on('request', (req, res)=>{
-    res.writeHead(200, {'Content-Type': 'text/html'})
-    res.end(socketFile)
-})
-
-server.listen(3000, ()=>{
-    console.log('Server running at http://127.0.0.1:3000')
-})
-
-const socket = io.listen(server)
-
-socket.on('connection', (client)=>{
-    console.log('Client connected')
-    client.send('Welcome client ' + client.id)
-})
-</pre>
-<pre class="prettyprint lang-html">
-&lt;!DOCTYPE html&gt;
-&lt;html lang="zh-cn"&gt;
-&lt;head&gt;
-    &lt;meta charset="UTF-8"&gt;
-    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
-    &lt;meta http-equiv="X-UA-Compatible" content="ie=edge"&gt;
-    &lt;title&gt;socket.html&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-    &lt;!-- 
-        从Node服务器直接加载
-        需要的Socket.IO客户端库
-    --&gt;
-    &lt;script src="/socket.io/socket.io.js"&gt;&lt;/script&gt;
-    &lt;script&gt;
-         let socket = io()
-         socket.on('message', function(data){
-             alert(data)
-         })
-    &lt;/script&gt;    
-&lt;/body&gt;
-&lt;/html&gt;    
+<pre class="prettyprint lang-bsh">
+# 清除缓存
+npm cache clean
 </pre>
 <h2>
-三、命名空间
+三、创建包
 </h2>
-<p>
-当把socket程序添加到其他已在使用socket的程序或正在写的服务需要嵌入到别人的项目中去时，可以使用命名空间把Socket.IO的监听器有效地区分到频道中，从而避免冲突
-</p>
-<pre class="prettyprint lang-js">
-/**
- * 使用命名空间的Socket.IO服务器
- */
-
-const http = require('http')
-const io = require('socket.io')
-const fs = require('fs')
-
-const sockFile = fs.readFileSync('namespace.html')
-
-const server = http.createServer()
-
-server.on('request', (req, res)=>{
-    res.writeHead(200, {'Content-Type': 'text/html'})
-    res.end(sockFile)
-})
-
-server.listen(3000, ()=>{
-    console.log('Server running at http://127.0.0.1:3000')
-})
-
-const socket = io.listen(server)
-
-//  socket.of函数把socket对象切分成多个独立的命名空间
-//  举个例子
-//  如果一个客户端连接到 http://localhost:3000/weather 并发起 emit() 命令
-//  它的结果只会在/weather命名空间里被处理
-
-socket
-.of('/upandrunning')
-.on('connection', (client)=>{
-    console.log('Client connected to Up and Running namespace.')
-    client.send('Welcome to Up and Running')
-})
-
-socket
-.of('/weather')
-.on('connection', (client)=>{
-    console.log('Client connected to Weather namespace.')
-    client.send('Welcome to Weather Updates')
-})
-</pre>
-<pre class="prettyprint lang-html">
-&lt;!DOCTYPE html&gt;
-&lt;html lang="en"&gt;
-&lt;head&gt;
-    &lt;meta charset="UTF-8"&gt;
-    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
-    &lt;meta http-equiv="X-UA-Compatible" content="ie=edge"&gt;
-    &lt;title&gt;使用命名空间的socket.io客户端&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-    &lt;script src="/socket.io/socket.io.js"&gt;&lt;/script&gt;
-    &lt;script&gt;
-        /**
-        * 创建了两个Socket.IO连接
-        * 每个Socket.IO连接都有自己独立的变量和.on()事件监听器
-        */ 
-
-        var upandrunning = io('http://127.0.0.1:3000/upandrunning')
-        var weather = io('http://127.0.0.1:3000/weather')
-
-        upandrunning.on('message', function(data){
-            document.write('&lt;br /&gt;&lt;br /&gt;Node: Up and Running Update&lt;br /&gt;')
-            document.write(data)
-        })
-
-        weather.on('message', function(data){
-            document.write('&lt;br /&gt;&lt;br /&gt;Weather Update&lt;br /&gt;')
-            document.write(data)
-        })        
-    &lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;
+<pre class="prettyprint lang-bsh">
+# 一个Node包就是一个包含package.json文件的目录
+# 快速生成一个包文件
+npm init
 </pre>
 <h2>
-四、Express中使用Socket.IO
+四、安装包
 </h2>
-<pre class="prettyprint lang-js">
-const app = require('express')()
-const http = require('http')
-const io = require('socket.io')
-
-app.get('/', (req, res)=>{
-    res.sendFile(__dirname + '/socket_express.html')
-})
-
-const server = http.createServer(app)
-
-server.listen(3000, ()=>{
-    console.log(`Server running at http://127.0.0.1:3000`)
-})
-
-const socketIo = io.listen(server)
-
-socketIo.on('connection', (socket)=>{
-    socket.emit('news', {
-        title: 'Welcome to World News',
-        contents: 'This news flash was sent from Node.js',
-        allowResponse: true,
-    })
-    socket.on('scoop', (data)=>{
-        socket.emit('news', {
-            title: 'Circular Emissions Worked',
-            contents: 'Received this content:' + data.contents,
-        })
-    })
-})
+<pre class="prettyprint lang-bsh">
+# 安装全局npm注册库中的包
+npm install packagename
 </pre>
-<pre class="prettyprint lang-html">
-&lt;script src="/socket.io/socket.io.js"&gt;&lt;/script&gt;
-&lt;script&gt;
-    const socket = io('http://127.0.0.1:3000')
-    socket.on('news', function(data){
-        //  当Socket.IO服务器发送news事件时
-        //  客户端会把新项目的标题和内容写到浏览器页面上
-        document.write('&lt;h1&gt;' + data.title + '&lt;/h1&gt;')
-        document.write('&lt;p&gt;' + data.contents + '&lt;/p&gt;')
-        if(data.allowResponse){
-            //  如果该news项目允许有反馈
-            //  客户端socket还会发起scoop事件
-            socket.emit('scoop', {contents: 'News data received by client'})
-        }
-    })
-&lt;/script&gt;
+<pre class="prettyprint lang-bsh">
+# 安装自己的包
+# 可以是本地文件系统的一个文件夹
+# 也可以是一个外部URL(比如 GitHub)
+npm install /path/to/yourpacage
 </pre>
 <h2>
-五、在Express和Socket.IO间共享session数据
+五、对外发布包
 </h2>
-<pre class="prettyprint lang-pug">
-!!! 5
-//- 客户端代码: views/socket.pug
-html(lang='en')
-    head
-        script(type='text/javascript', src='/socket.io/socket.io.js')
-        script(type='text/javascript')
-            var socket = io.connect()
-            socket.on('emailchanged', function(data) {
-                document.getElementById('email').value = data.email
-            })
-            var submitEmail = function(form) {
-                socket.emit('emailupdate', {email: form.email.value})
-                return false
-            }
-    body
-        h1 Welcome
-        form(onsubmit='return submitEmail(this);')
-            input(id='email', name='email', type='text', value=locals.email)
-            input(type='submit', value='Change Email')
+<pre class="prettyprint lang-bsh">
+# 创建一个用户
+npm adduser
 </pre>
-<pre class="prettyprint lang-js">
-// app.js
-
-const io = require('socket.io')
-const express = require('express')
-const app = express.createServer()
-const store = new express.session.MemoryStore
-const utils = require('connect').utils
-const Session = require('connect').middleware.session.Session
-
-app.configure(function () {
-    app.use(express.cookieParser())
-    app.use(express.session({
-        secret: 'secretKey', 
-        key: 'express.sid',
-        store: store
-    }))
-    app.use(function (req, res) {
-        var sess = req.session
-        res.render('socket.jade', {
-            email: sess.email || ''
-        })
-    })
-})
-
-app.listen(8080)
-
-const sio = io.listen(app)
-
-sio.configure(function () {
-    sio.set('authorization', function (data, accept) {
-        var cookies = utils.parseCookie(data.headers.cookie)
-        data.sessionID = cookies['express.sid']
-        data.sessionStore = store
-        store.get(data.sessionID, function (err, session) {
-            if (err || !session) {
-                return accept("Invalid session", false)
-            }
-            data.session = new Session(data, session)
-            accept(null, true)
-        })
-    })
-    sio.sockets.on('connection', function (socket) {
-        var session = socket.handshake.session
-        socket.join(socket.handshake.sessionId)
-        socket.on('emailupdate', function (data) {
-            session.email = data.email
-            session.save()
-            sio.sockets.in(socket.handshake.sessionId).emit('emailchanged', {
-                email: data.email
-            })
-        })
-    })
-})
+<pre class="prettyprint lang-bsh">
+# 发布包
+npm publish
+</pre>
+<pre class="prettyprint lang-bsh">
+# 取消发布
+npm unpublish
+</pre>
+<h2>
+六、链接
+</h2>
+<pre class="prettyprint lang-bsh">
+# 在全局包路径中安装Express框架并包含到当前项目中
+# 每当Express升级，当前项目会自动从全局包文件夹中找到最新版本来使用
+# 如果你在多个项目中链接了Express
+# 所有这些项目都会同步到最新的版本
+npm link express
 </pre>
